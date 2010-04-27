@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0"
+	xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd
+		http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+
+	<name>Flagbit_ChangeAttributeSet</name>
+	<channel>connect.magentocommerce.com/community</channel>
+	<summary>In Magento every product has a fixed attibute set. This module enables you to switch it.</summary>
+	<description>In Magento every product has a fixed attribute set that cannot be changed after the product's creation. This is in many productive contexts not an acceptable limitation. This module overrides the standard behaviour and makes it possible to change attribute sets after the item's creation making Magento even more flexible. :) Fixed 404 Redirect Bug.</description>
+	<lead>
+		<name><![CDATA[Flagbit GmbH & Co. KG]]></name>
+		<user>flagbit</user>
+		<email>magento@flagbit.de</email>
+		<active>yes</active>
+	</lead>
+	<date>2010-04-27</date>
+	<time>16:12:02</time>
+	<version>
+		<release>1.0.2</release>
+		<api>1.0.2</api>
+	</version>
+	<stability>
+		<release>stable</release>
+		<api>stable</api>
+	</stability>
+	<license uri="http://www.opensource.org/licenses/gpl-license.php">GPL</license>
+	<notes>In Magento every product has a fixed attibute set. This module enables you to switch it.</notes>
+	<contents>
+		<dir name="/">
+			<dir name="Flagbit">
+				<dir name="ChangeAttributeSet">
+					<dir name="Block">
+						<file name="ProductGrid.php" role="magecommunity" />
+					</dir>
+					<dir name="controllers">
+						<file name="IndexController.php" role="magecommunity" />
+					</dir>
+					<dir name="etc">
+						<file name="config.xml" role="magecommunity" />
+					</dir>
+				</dir>
+			</dir>
+			<dir name="modules">
+				<file name="Flagbit_ChangeAttributeSet.xml" role="mageetc" />
+			</dir>
+		</dir>
+	</contents>
+	<dependencies>
+		<required>
+			<php>
+				<min>5.2.0</min>
+				<max>5.3.0</max>
+			</php>
+			<pearinstaller>
+				<min>1.6.2</min>
+			</pearinstaller>
+		</required>
+	</dependencies>
+	<phprelease />
+</package>

@@ -12,7 +12,6 @@
  * Public License for more details.                                       *
  *                                                                        */
 
-
 require_once 'app/code/core/Mage/Adminhtml/controllers/Catalog/ProductController.php';
 
 /**
@@ -21,8 +20,9 @@ require_once 'app/code/core/Mage/Adminhtml/controllers/Catalog/ProductController
  * @version $Id$
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
  */
-class Flagbit_ChangeAttributeSet_IndexController extends Mage_Adminhtml_Catalog_ProductController {
-
+class Flagbit_ChangeAttributeSet_IndexController
+	extends Mage_Adminhtml_Catalog_ProductController
+{
 	/**
 	 * Class Constructor
 	 * call the parent Constructor
@@ -36,31 +36,31 @@ class Flagbit_ChangeAttributeSet_IndexController extends Mage_Adminhtml_Catalog_
 	 */
 	public function indexAction()
 	{
-
-	    $productIds = $this->getRequest()->getParam('product');
-	    $storeId = (int)$this->getRequest()->getParam('store', 0);
-	    if(!is_array($productIds)) {
-		$this->_getSession()->addError($this->__('Please select product(s)'));
-	    } else {
-		try {
-		    foreach ($productIds as $productId) {
-			$product = Mage::getSingleton('catalog/product')
-			    ->unsetData()
-			    ->setStoreId($storeId)
-			    ->load($productId)
-			    ->setAttributeSetId($this->getRequest()->getParam('attribute_set'))
-			    ->setIsMassupdate(true)
-			    ->save();
-		    }
-		    Mage::dispatchEvent('catalog_product_massupdate_after', array('products'=>$productIds));
-		    $this->_getSession()->addSuccess(
-			$this->__('Total of %d record(s) were successfully updated', count($productIds))
-		    );
-		} catch (Exception $e) {
-		    $this->_getSession()->addError($e->getMessage());
+		$productIds = $this->getRequest()->getParam('product');
+		$storeId = (int)$this->getRequest()->getParam('store', 0);
+		if (!is_array($productIds)) {
+			$this->_getSession()->addError($this->__('Please select product(s)'));
 		}
-	    }
-	    $this->_redirect('adminhtml/catalog_product/index/', array());
+		else {
+			try {
+				foreach ($productIds as $productId) {
+					$product = Mage::getSingleton('catalog/product')
+						->unsetData()
+						->setStoreId($storeId)
+						->load($productId)
+						->setAttributeSetId($this->getRequest()->getParam('attribute_set'))
+						->setIsMassupdate(true)
+						->save();
+				}
+				Mage::dispatchEvent('catalog_product_massupdate_after', array('products'=>$productIds));
+				$this->_getSession()->addSuccess(
+					$this->__('Total of %d record(s) were successfully updated', count($productIds))
+				);
+			}
+			catch (Exception $e) {
+				$this->_getSession()->addException($e, $e->getMessage());
+			}
+		}
+		$this->_redirect('adminhtml/catalog_product/index/', array());
 	}	
-	
 }
