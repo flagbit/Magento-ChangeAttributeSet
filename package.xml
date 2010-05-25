@@ -17,8 +17,8 @@
 	<date>2010-04-27</date>
 	<time>16:12:02</time>
 	<version>
-		<release>1.0.2</release>
-		<api>1.0.2</api>
+		<release>1.0.3</release>
+		<api>1.0.3</api>
 	</version>
 	<stability>
 		<release>stable</release>
@@ -55,6 +55,11 @@
 			<pearinstaller>
 				<min>1.6.2</min>
 			</pearinstaller>
+			<package>
+				<name>TBT_Enhancedgrid</name>
+				<channel>connect.magentocommerce.com/community</channel>
+				<conflicts/>
+			</package>
 		</required>
 	</dependencies>
 	<phprelease />
