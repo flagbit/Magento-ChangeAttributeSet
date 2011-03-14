@@ -2,38 +2,41 @@
 <config>
 	<modules>
 		<Flagbit_ChangeAttributeSet>
-			<active>true</active>
-			<codePool>community</codePool>
-			<version>1.0.4</version>
+			<version>2.0.0</version>
 		</Flagbit_ChangeAttributeSet>
 	</modules>
 	
 	<global>
-		<blocks>
-			<adminhtml>
-				<rewrite>
-					<catalog_product_grid>Flagbit_ChangeAttributeSet_Block_ProductGrid</catalog_product_grid>
-				</rewrite>
-			</adminhtml>
-		</blocks>
-
-		<rewrite>
-			<flagbit_form_index>
-				<from><![CDATA[#^/{adminhtml}/catalog_product/changeattributeset/.*#]]></from>
-				<to>/changeattributeset/</to>
-			</flagbit_form_index>			
-		</rewrite>
+        <models>
+            <flagbit_changeattributeset>
+                <class>Flagbit_ChangeAttributeSet_Model</class>
+            </flagbit_changeattributeset>
+		</models>
 	</global>
+    <adminhtml>        
+        <events>
+            <adminhtml_block_html_before>
+                <observers>
+                    <flagbit_changeattributeset>
+                        <type>singleton</type>
+                        <class>flagbit_changeattributeset/observer</class>
+                        <method>addMassactionToProductGrid</method>
+                    </flagbit_changeattributeset>
+                </observers>
+            </adminhtml_block_html_before>
+		</events>        
+    </adminhtml>
 	
     <admin>
         <routers>
-            <flagbit_changeattributeset>
-                <use>admin</use>
+            <adminhtml>
                 <args>
-                    <module>Flagbit_ChangeAttributeSet</module>
-                    <frontName>changeattributeset</frontName>
+                    <modules>
+                        <Flagbit_ChangeAttributeSet before="Mage_Adminhtml">Flagbit_ChangeAttributeSet_Adminhtml</Flagbit_ChangeAttributeSet>
+                    </modules>
                 </args>
-            </flagbit_changeattributeset>
+            </adminhtml>
         </routers>
-    </admin>
+    </admin>		
+		
 </config>

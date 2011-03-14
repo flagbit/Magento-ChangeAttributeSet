@@ -1,65 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0"
-	xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd
-		http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-
-	<name>Flagbit_ChangeAttributeSet</name>
-	<channel>connect.magentocommerce.com/community</channel>
-	<summary>In Magento every product has a fixed attibute set. This module enables you to switch it.</summary>
-	<description>In Magento every product has a fixed attribute set that cannot be changed after the product's creation. This is in many productive contexts not an acceptable limitation. This module overrides the standard behaviour and makes it possible to change attribute sets after the item's creation making Magento even more flexible. :) Fixed 404 Redirect Bug.</description>
-	<lead>
-		<name><![CDATA[Flagbit GmbH & Co. KG]]></name>
-		<user>flagbit</user>
-		<email>magento@flagbit.de</email>
-		<active>yes</active>
-	</lead>
-	<date>2010-06-07</date>
-	<time>16:25:02</time>
-	<version>
-		<release>1.0.4</release>
-		<api>1.0.4</api>
-	</version>
-	<stability>
-		<release>stable</release>
-		<api>stable</api>
-	</stability>
-	<license uri="http://www.opensource.org/licenses/gpl-license.php">GPL</license>
-	<notes>In Magento every product has a fixed attibute set. This module enables you to switch it.</notes>
-	<contents>
-		<dir name="/">
-			<dir name="Flagbit">
-				<dir name="ChangeAttributeSet">
-					<dir name="Block">
-						<file name="ProductGrid.php" role="magecommunity" />
-					</dir>
-					<dir name="controllers">
-						<file name="IndexController.php" role="magecommunity" />
-					</dir>
-					<dir name="etc">
-						<file name="config.xml" role="magecommunity" />
-					</dir>
-				</dir>
-			</dir>
-			<dir name="modules">
-				<file name="Flagbit_ChangeAttributeSet.xml" role="mageetc" />
-			</dir>
-		</dir>
-	</contents>
-	<dependencies>
-		<required>
-			<php>
-				<min>5.2.0</min>
-			</php>
-			<pearinstaller>
-				<min>1.6.2</min>
-			</pearinstaller>
-			<package>
-				<name>TBT_Enhancedgrid</name>
-				<channel>connect.magentocommerce.com/community</channel>
-				<conflicts/>
-			</package>
-		</required>
-	</dependencies>
-	<phprelease />
+<package packagerversion="1.9.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+    http://pear.php.net/dtd/tasks-1.0.xsd
+    http://pear.php.net/dtd/package-2.0
+    http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Flagbit_ChangeAttributeSet</name>
+ <channel>connect.magentocommerce.com/community</channel>
+ <summary>In Magento every product has a fixed attibute set. This module enables you to switch it.</summary>
+ <description>In Magento every product has a fixed attribute set that cannot be changed after the product&apos;s creation. This is in many productive contexts not an acceptable limitation. This module overrides the standard behaviour and makes it possible to change attribute sets after the item&apos;s creation making Magento even more flexible. :) Fixed 404 Redirect Bug.</description>
+ <lead>
+  <name>Flagbit GmbH &amp; Co. KG</name>
+  <user>flagbit</user>
+  <email>magento@flagbit.de</email>
+  <active>yes</active>
+ </lead>
+ <date>2010-11-16</date>
+ <time>11:07:48</time>
+ <version>
+  <release>1.0.4</release>
+  <api>1.0.4</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license>GPL</license>
+ <notes>
+In Magento every product has a fixed attibute set. This module enables you to switch it.
+ </notes>
+ <contents>
+  <dir name="/">
+   <dir name="src">
+    <dir name="app">
+     <dir name="code">
+      <dir name="community">
+       <dir name="Flagbit">
+        <dir name="ChangeAttributeSet">
+         <dir name="Block">
+          <file md5sum="408ad70ad00ceafdd01198b7abac3f82" name="ProductGrid.php" role="mage" />
+         </dir> <!-- //src/app/code/community/Flagbit/ChangeAttributeSet/Block -->
+         <dir name="controllers">
+          <file md5sum="e44e63dd4a7f6b2d47598e921c562e46" name="IndexController.php" role="mage" />
+         </dir> <!-- //src/app/code/community/Flagbit/ChangeAttributeSet/controllers -->
+         <dir name="etc">
+          <file md5sum="b941ebcf83d7c125553ae7b2b532a0fc" name="config.xml" role="mage" />
+         </dir> <!-- //src/app/code/community/Flagbit/ChangeAttributeSet/etc -->
+        </dir> <!-- //src/app/code/community/Flagbit/ChangeAttributeSet -->
+       </dir> <!-- //src/app/code/community/Flagbit -->
+      </dir> <!-- //src/app/code/community -->
+     </dir> <!-- //src/app/code -->
+     <dir name="etc">
+      <dir name="modules">
+       <file md5sum="90087134613f57e05ebc216a6e576d4a" name="Flagbit_ChangeAttributeSet.xml" role="mage" />
+      </dir> <!-- //src/app/etc/modules -->
+     </dir> <!-- //src/app/etc -->
+    </dir> <!-- //src/app -->
+   </dir> <!-- //src -->
+   <file md5sum="f534af8184713318fec9b549b4d770da" name="build.default.properties" role="mage" />
+   <file md5sum="6ab946f41a6fbde8cec86a236268d3c8" name="build.properties" role="mage" />
+   <file md5sum="fcce443a1b3d7efa7716e42754b772ec" name="build.xml" role="mage" />
+   <file md5sum="7138708410aedfd60cf8fc8960f619e4" name="cache.properties" role="mage" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.2.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.6.2</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>1.0.4</release>
+    <api>1.0.4</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2010-11-16</date>
+   <license>GPL</license>
+   <notes>
+In Magento every product has a fixed attibute set. This module enables you to switch it.
+   </notes>
+  </release>
+ </changelog>
 </package>

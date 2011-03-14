@@ -1,6 +1,6 @@
 <?php
 /*                                                                        *
- * This script is part of the TypoGento project 						  *
+ * This script is part of the ChangeAttributeSet project        		  *
  *                                                                        *
  * TypoGento is free software; you can redistribute it and/or modify it   *
  * under the terms of the GNU General Public License version 2 as         *
@@ -12,29 +12,19 @@
  * Public License for more details.                                       *
  *                                                                        */
 
-require_once 'app/code/core/Mage/Adminhtml/controllers/Catalog/ProductController.php';
-
 /**
- * ChangeAttributeSet Index Controller
+ * ChangeAttributeSet Controller
  *
- * @version $Id: IndexController.php 282 2010-04-27 14:42:36Z fuhr $
+ * @version $Id$
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
  */
-class Flagbit_ChangeAttributeSet_IndexController
-	extends Mage_Adminhtml_Catalog_ProductController
+class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mage_Adminhtml_Controller_Action
 {
-	/**
-	 * Class Constructor
-	 * call the parent Constructor
-	 */	
-	public function __constuct(){
-		parent::__construct();
-	}
 	
 	/**
 	 * Product list page
 	 */
-	public function indexAction()
+	public function changeattributesetAction()
 	{
 		$productIds = $this->getRequest()->getParam('product');
 		$storeId = (int)$this->getRequest()->getParam('store', 0);
