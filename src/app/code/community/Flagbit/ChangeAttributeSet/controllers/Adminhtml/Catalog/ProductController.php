@@ -34,11 +34,10 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         if (!is_array($productIds)) {
             $this->_getSession()->addError($this->__('Please select product(s)'));
         } else {
-
-            $collection = Mage::getModel('catalog/product')->getCollection();
-            $collection->addAttributeToFilter('entity_id', array('in' => $productIds));
-
             try {
+                $collection = Mage::getModel('catalog/product')->getCollection()
+                    ->addAttributeToFilter('entity_id', array('in' => $productIds));
+
                 foreach ($collection as $product) {
                     $product->setAttributeSetId($attributeSet)->setStoreId($storeId);
                 }
