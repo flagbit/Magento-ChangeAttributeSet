@@ -20,36 +20,36 @@
  */
 class Flagbit_ChangeAttributeSet_Model_Observer
 {
-	
-	/**
-	 * add Massaction Option to Productgrid
-	 * 
-	 * @param $observer Varien_Event
-	 */
-	public function addMassactionToProductGrid($observer)
-	{
-		$block = $observer->getBlock();
-		if($block instanceof Mage_Adminhtml_Block_Catalog_Product_Grid){
-			
-			$sets = Mage::getResourceModel('eav/entity_attribute_set_collection')
-				->setEntityTypeFilter(Mage::getModel('catalog/product')->getResource()->getTypeId())
-				->load()
-				->toOptionHash();
-		
-			$block->getMassactionBlock()->addItem('flagbit_changeattributeset', array(
-				'label'=> Mage::helper('catalog')->__('Change attribute set'),
-				'url'  => $block->getUrl('*/*/changeattributeset', array('_current'=>true)),
-				'additional' => array(
-					'visibility' => array(
-						'name' => 'attribute_set',
-						'type' => 'select',
-						'class' => 'required-entry',
-						'label' => Mage::helper('catalog')->__('Attribute Set'),
-						'values' => $sets
-					)
-				)
-			)); 			
-		}
-	}
-	
+
+    /**
+     * add Massaction Option to Productgrid
+     *
+     * @param $observer Varien_Event
+     */
+    public function addMassactionToProductGrid($observer)
+    {
+        $block = $observer->getBlock();
+        if ($block instanceof Mage_Adminhtml_Block_Catalog_Product_Grid) {
+
+            $sets = Mage::getResourceModel('eav/entity_attribute_set_collection')
+                ->setEntityTypeFilter(Mage::getModel('catalog/product')->getResource()->getTypeId())
+                ->load()
+                ->toOptionHash();
+
+            $block->getMassactionBlock()->addItem('flagbit_changeattributeset', array(
+                'label'      => Mage::helper('catalog')->__('Change attribute set'),
+                'url'        => $block->getUrl('*/*/changeattributeset', array('_current' => TRUE)),
+                'additional' => array(
+                    'visibility' => array(
+                        'name'   => 'attribute_set',
+                        'type'   => 'select',
+                        'class'  => 'required-entry',
+                        'label'  => Mage::helper('catalog')->__('Attribute Set'),
+                        'values' => $sets
+                    )
+                )
+            ));
+        }
+    }
+
 }
