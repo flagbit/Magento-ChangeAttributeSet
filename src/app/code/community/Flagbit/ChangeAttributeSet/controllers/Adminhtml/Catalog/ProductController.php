@@ -39,6 +39,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                     ->addAttributeToFilter('entity_id', array('in' => $productIds));
 
                 foreach ($collection as $product) {
+                    $this->guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
                     $product->setAttributeSetId($attributeSet)->setStoreId($storeId);
                 }
                 $collection->save();
@@ -53,4 +54,32 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         }
         $this->_redirect('adminhtml/catalog_product/index/', array());
     }
+
+    private function guardAgainstConfigurableAttributeNotInDestinationAttributeSet(Mage_Catalog_Model_Product $product, $attributeSetId)
+    {
+        $type = $product->getTypeInstance();
+        if (!$type instanceof Mage_Catalog_Model_Product_Type_Configurable) {
+            return;
+        }
+
+        foreach ($type->getConfigurableAttributes($product) as $configurableAttribute) {
+            $attribute = Mage::getModel('eav/entity_attribute')->load($configurableAttribute->getAttributeId());
+            if ($this->isAttributeInAttributeSet($attribute, $attributeSetId)) {
+                throw new RuntimeException($this->__(
+                    'The configurable attribute "%s" is not available in the targeted attribute set. Please create it first!',
+                    $attribute->getFrontendLabel()
+                ));
+            }
+        }
+    }
+
+    private function isAttributeInAttributeSet(Mage_Eav_Model_Entity_Attribute $attribute, $attributeSetId)
+    {
+        $attributesMatchingInNewAttributeSet = $attribute->getResourceCollection()
+            ->setAttributeSetFilter($attributeSetId)
+            ->addFieldToFilter('entity_attribute.attribute_id', $attribute->getId())
+            ->load();
+        return count($attributesMatchingInNewAttributeSet) === 0;
+    }
+
 }
