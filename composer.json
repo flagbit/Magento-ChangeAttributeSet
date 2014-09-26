@@ -1,0 +1,22 @@
+{
+    "name": "flagbit/magento-changeattributeset",
+    "description": "In Magento every product has a fixed attibute set. This module enables you to switch it.",
+    "license": "GPL",
+    "type": "magento-module",
+    "authors": [
+        {
+            "name": "flagbit",
+            "email": "info@flagbit.de"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.firegento.com"
+        }
+    ],
+    "require": {
+        "magento-hackathon/magento-composer-installer": "*"
+    },
+    "minimum-stability": "dev"
+}
