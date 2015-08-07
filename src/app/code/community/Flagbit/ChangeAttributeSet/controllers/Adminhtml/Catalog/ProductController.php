@@ -82,4 +82,13 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         return count($attributesMatchingInNewAttributeSet) === 0;
     }
 
+    /**
+     * Check admin permissions for this controller.
+     * This allows a user to change the attribute set if they are allowed to edit products.
+     */
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('catalog/products');
+    }
+
 }
