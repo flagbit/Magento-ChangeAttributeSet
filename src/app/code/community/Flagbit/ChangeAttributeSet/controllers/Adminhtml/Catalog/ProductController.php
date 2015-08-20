@@ -36,7 +36,9 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         } else {
             try {
                 $collection = Mage::getModel('catalog/product')->getCollection()
-                    ->addAttributeToFilter('entity_id', array('in' => $productIds));
+                    ->addAttributeToFilter('entity_id', array('in' => $productIds))
+                    ->addAttributeToSelect('url_key')
+                ;
 
                 foreach ($collection as $product) {
                     $this->guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
