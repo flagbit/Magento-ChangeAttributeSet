@@ -20,11 +20,11 @@
  */
 class Flagbit_ChangeAttributeSet_Model_Observer
 {
-
     /**
-     * add Massaction Option to Productgrid
+     * Add massAction option to Productgrid
      *
-     * @param $observer Varien_Event
+     * @param  Varien_Event_Observer $observer
+     * @return self
      */
     public function addMassactionToProductGrid($observer)
     {
@@ -36,20 +36,23 @@ class Flagbit_ChangeAttributeSet_Model_Observer
                 ->load()
                 ->toOptionHash();
 
-            $block->getMassactionBlock()->addItem('flagbit_changeattributeset', array(
-                'label'      => Mage::helper('catalog')->__('Change attribute set'),
-                'url'        => $block->getUrl('*/*/changeattributeset', array('_current' => TRUE)),
-                'additional' => array(
-                    'visibility' => array(
-                        'name'   => 'attribute_set',
-                        'type'   => 'select',
-                        'class'  => 'required-entry',
-                        'label'  => Mage::helper('catalog')->__('Attribute Set'),
-                        'values' => $sets
+            $block->getMassactionBlock()->addItem(
+                'flagbit_changeattributeset',
+                array(
+                    'label'      => Mage::helper('catalog')->__('Change attribute set'),
+                    'url'        => $block->getUrl('*/*/changeattributeset', array('_current' => TRUE)),
+                    'additional' => array(
+                        'visibility' => array(
+                            'name'   => 'attribute_set',
+                            'type'   => 'select',
+                            'class'  => 'required-entry',
+                            'label'  => Mage::helper('catalog')->__('Attribute Set'),
+                            'values' => $sets
+                        )
                     )
                 )
-            ));
+            );
         }
+        return $this;
     }
-
 }
