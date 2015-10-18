@@ -27,7 +27,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
     {
         $productIds   = $this->getRequest()->getParam('product');
         $productIds   = array_map('intval', $productIds);
-        $storeId      = (int)$this->getRequest()->getParam('store', 0);
+        $storeId      = (int)$this->getRequest()->getParam('store', Mage_Core_Model_App::ADMIN_STORE_ID);
         $attributeSet = (int)$this->getRequest()->getParam('attribute_set');
 
         if (!is_array($productIds)) {
