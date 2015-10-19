@@ -20,15 +20,14 @@
  */
 class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mage_Adminhtml_Controller_Action
 {
-
     /**
-     * Product list page
+     * Product list page - change one or more products attribute set IDs
      */
     public function changeattributesetAction()
     {
         $productIds   = $this->getRequest()->getParam('product');
         $productIds   = array_map('intval', $productIds);
-        $storeId      = (int)$this->getRequest()->getParam('store', 0);
+        $storeId      = (int)$this->getRequest()->getParam('store', Mage_Core_Model_App::ADMIN_STORE_ID);
         $attributeSet = (int)$this->getRequest()->getParam('attribute_set');
 
         if (!is_array($productIds)) {
@@ -41,7 +40,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                 ;
 
                 foreach ($collection as $product) {
-                    $this->guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
+                    $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
                     $product->setAttributeSetId($attributeSet)->setStoreId($storeId);
                 }
                 $collection->save();
@@ -57,7 +56,15 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         $this->_redirect('adminhtml/catalog_product/index/', array());
     }
 
-    private function guardAgainstConfigurableAttributeNotInDestinationAttributeSet(Mage_Catalog_Model_Product $product, $attributeSetId)
+    /**
+     * Ensure that all of a configurable product's configurable attributes exist in the new attribute set before
+     * changing to it.
+     * @param  Mage_Catalog_Model_Product $product
+     * @param  int                        $attributeSetId
+     * @return void
+     * @throws RuntimeException If one of the attributes isn't in the new set
+     */
+    private function _guardAgainstConfigurableAttributeNotInDestinationAttributeSet(Mage_Catalog_Model_Product $product, $attributeSetId)
     {
         $type = $product->getTypeInstance();
         if (!$type instanceof Mage_Catalog_Model_Product_Type_Configurable) {
@@ -66,31 +73,40 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
 
         foreach ($type->getConfigurableAttributes($product) as $configurableAttribute) {
             $attribute = Mage::getModel('eav/entity_attribute')->load($configurableAttribute->getAttributeId());
-            if ($this->isAttributeInAttributeSet($attribute, $attributeSetId)) {
-                throw new RuntimeException($this->__(
-                    'The configurable attribute "%s" is not available in the targeted attribute set. Please create it first!',
-                    $attribute->getFrontendLabel()
-                ));
+            if ($this->_isAttributeInAttributeSet($attribute, $attributeSetId)) {
+                throw new RuntimeException(
+                    $this->__(
+                        'The configurable attribute "%s" is not available in the targeted attribute set. Please create it first!',
+                        $attribute->getFrontendLabel()
+                    )
+                );
             }
         }
     }
 
-    private function isAttributeInAttributeSet(Mage_Eav_Model_Entity_Attribute $attribute, $attributeSetId)
+    /**
+     * Check if an attribute is in an attribute set
+     * @param  Mage_Eav_Model_Entity_Attribute $attribute
+     * @param  int                             $attributeSetId
+     * @return boolean
+     */
+    private function _isAttributeInAttributeSet(Mage_Eav_Model_Entity_Attribute $attribute, $attributeSetId)
     {
         $attributesMatchingInNewAttributeSet = $attribute->getResourceCollection()
             ->setAttributeSetFilter($attributeSetId)
             ->addFieldToFilter('entity_attribute.attribute_id', $attribute->getId())
             ->load();
-        return count($attributesMatchingInNewAttributeSet) === 0;
+
+        return (count($attributesMatchingInNewAttributeSet) === 0);
     }
 
     /**
      * Check admin permissions for this controller.
      * This allows a user to change the attribute set if they are allowed to edit products.
+     * @return boolean
      */
     protected function _isAllowed()
     {
         return Mage::getSingleton('admin/session')->isAllowed('catalog/products');
     }
-
 }

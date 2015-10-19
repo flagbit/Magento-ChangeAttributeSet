@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<modules>
-		<Flagbit_ChangeAttributeSet>
-			<version>2.0.0</version>
-		</Flagbit_ChangeAttributeSet>
-	</modules>
-	
-	<global>
+    <modules>
+        <Flagbit_ChangeAttributeSet>
+            <version>2.0.0</version>
+        </Flagbit_ChangeAttributeSet>
+    </modules>
+    
+    <global>
         <models>
             <flagbit_changeattributeset>
                 <class>Flagbit_ChangeAttributeSet_Model</class>
             </flagbit_changeattributeset>
-		</models>
-	</global>
+        </models>
+    </global>
     <adminhtml>        
         <events>
             <adminhtml_block_html_before>
@@ -24,9 +24,9 @@
                     </flagbit_changeattributeset>
                 </observers>
             </adminhtml_block_html_before>
-		</events>        
+        </events>        
     </adminhtml>
-	
+    
     <admin>
         <routers>
             <adminhtml>
@@ -37,6 +37,5 @@
                 </args>
             </adminhtml>
         </routers>
-    </admin>		
-		
+    </admin>
 </config>
