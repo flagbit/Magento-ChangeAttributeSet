@@ -76,8 +76,9 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             if ($this->_isAttributeInAttributeSet($attribute, $attributeSetId)) {
                 throw new RuntimeException(
                     $this->__(
-                        'The configurable attribute "%s" is not available in the targeted attribute set. Please create it first!',
-                        $attribute->getFrontendLabel()
+                        'The configurable attribute "%s" on "%s" is not available in the targeted attribute set. Please create it first!',
+                        $attribute->getFrontendLabel(),
+                        $product->getSku()
                     )
                 );
             }
