@@ -1,22 +1,27 @@
 <?php
-/*                                                                        *
- * This script is part of the ChangeAttributeSet project        		  *
- *                                                                        *
- * TypoGento is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU General Public License version 2 as         *
- * published by the Free Software Foundation.                             *
- *                                                                        *
- * This script is distributed in the hope that it will be useful, but     *
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
- * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
- * Public License for more details.                                       *
- *                                                                        */
+/**
+ * Magento ChangeAttributeSet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * @copyright Copyright (C) 2010-2015 Flagbit GmbH & Co. KG
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2.0
+ */
 
 /**
  * ChangeAttributeSet Observer Model
- *
- * @version $Id: ProductController.php 282 2010-04-27 14:42:36Z fuhr $
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
  */
 class Flagbit_ChangeAttributeSet_Model_Observer
 {
@@ -31,7 +36,7 @@ class Flagbit_ChangeAttributeSet_Model_Observer
         if (!$this->_isAllowedAction()) {
             return $this;
         }
-        
+
         $block = $observer->getBlock();
         if ($block instanceof Mage_Adminhtml_Block_Catalog_Product_Grid) {
             $sets = Mage::getResourceModel('eav/entity_attribute_set_collection')
@@ -42,7 +47,7 @@ class Flagbit_ChangeAttributeSet_Model_Observer
             $block->getMassactionBlock()->addItem(
                 'flagbit_changeattributeset',
                 array(
-                    'label'      => Mage::helper('catalog')->__('Change attribute set'),
+                    'label'      => Mage::helper('catalog')->__('Change Attribute Set'),
                     'url'        => $block->getUrl('*/*/changeattributeset', array('_current' => true)),
                     'additional' => array(
                         'visibility' => array(
@@ -50,9 +55,9 @@ class Flagbit_ChangeAttributeSet_Model_Observer
                             'type'   => 'select',
                             'class'  => 'required-entry',
                             'label'  => Mage::helper('catalog')->__('Attribute Set'),
-                            'values' => $sets
-                        )
-                    )
+                            'values' => $sets,
+                        ),
+                    ),
                 )
             );
         }

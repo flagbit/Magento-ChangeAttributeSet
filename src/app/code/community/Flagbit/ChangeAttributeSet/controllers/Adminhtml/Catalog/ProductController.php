@@ -1,27 +1,30 @@
 <?php
-/*                                                                        *
- * This script is part of the ChangeAttributeSet project        		  *
- *                                                                        *
- * TypoGento is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU General Public License version 2 as         *
- * published by the Free Software Foundation.                             *
- *                                                                        *
- * This script is distributed in the hope that it will be useful, but     *
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
- * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
- * Public License for more details.                                       *
- *                                                                        */
+/**
+ * Magento ChangeAttributeSet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * @copyright Copyright (C) 2010-2015 Flagbit GmbH & Co. KG
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2.0
+ */
 
 /**
  * ChangeAttributeSet Controller
- *
- * @version $Id$
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
  */
 class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mage_Adminhtml_Controller_Action
 {
-    protected $_deleteAttributes = array();
-    
     /**
      * Product list page - change one or more products attribute set IDs
      */
@@ -31,7 +34,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         $productIds   = array_map('intval', $productIds);
         $storeId      = (int)$this->getRequest()->getParam('store', Mage_Core_Model_App::ADMIN_STORE_ID);
         $attributeSet = (int)$this->getRequest()->getParam('attribute_set');
-        $_deleteFlag  = Mage::getStoreConfigFlag('catalog/flagbit_changeattributeset/delete_old_data');
+        $deleteFlag   = Mage::getStoreConfigFlag('catalog/flagbit_changeattributeset/delete_old_data');
 
         if (!is_array($productIds)) {
             $this->_getSession()->addError($this->__('Please select product(s)'));
@@ -41,7 +44,13 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                     ->addAttributeToFilter('entity_id', array('in' => $productIds))
                     ->addAttributeToSelect('url_key');
 
-                if ($_deleteFlag) {
+                foreach ($collection as $product) {
+                    $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
+                    $product->setAttributeSetId($attributeSet)->setStoreId($storeId);
+                }
+                $collection->save();
+
+                if ($deleteFlag) {
                     $targetAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
                         ->setAttributeSetFilter($attributeSet)
                         ->getColumnValues('attribute_code');
@@ -49,33 +58,24 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                     $allAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
                         ->getColumnValues('attribute_code');
 
+                    $attributesToDelete = array();
                     if ($diffAttributes = array_diff($allAttributes, $targetAttributes)) {
-                        $this->_deleteAttributes = $diffAttributes;
-                    } else {
-                        $_deleteFlag = false;
+                        $attributesToDelete = $diffAttributes;
                     }
-                }
 
-                foreach ($collection as $product) {
-                    $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
-                    $product->setAttributeSetId($attributeSet)->setStoreId($storeId);
-                }
-                $collection->save();
-
-                if ($_deleteFlag) {
                     $resource = Mage::getSingleton('core/resource');
                     $read = $resource->getConnection('core_read');
                     $write = $resource->getConnection('core_write');
 
                     $query = $read->select()
                         ->from($resource->getTableName('eav_attribute'), array('attribute_id'))
-                        ->where('attribute_code IN (?)', $this->_deleteAttributes);
+                        ->where('attribute_code IN (?)', $attributesToDelete);
                     $attributeIds = $read->fetchCol($query, 'attribute_id');
 
                     foreach ($this->getDeleteFromTables() as $table) {
                         $condition = array(
                             $write->quoteInto('entity_id IN (?)', $productIds),
-                            $write->quoteInto('attribute_id IN (?)', $attributeIds)
+                            $write->quoteInto('attribute_id IN (?)', $attributeIds),
                         );
                         $write->delete($resource->getTableName($table), $condition);
                     }
@@ -99,7 +99,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             'catalog_product_entity_decimal',
             'catalog_product_entity_int',
             'catalog_product_entity_text',
-            'catalog_product_entity_varchar'
+            'catalog_product_entity_varchar',
         );
     }
 
@@ -108,7 +108,6 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
      * changing to it.
      * @param  Mage_Catalog_Model_Product $product
      * @param  int                        $attributeSetId
-     * @return void
      * @throws RuntimeException If one of the attributes isn't in the new set
      */
     private function _guardAgainstConfigurableAttributeNotInDestinationAttributeSet(Mage_Catalog_Model_Product $product, $attributeSetId)
@@ -136,7 +135,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
      * Check if an attribute is in an attribute set
      * @param  Mage_Eav_Model_Entity_Attribute $attribute
      * @param  int                             $attributeSetId
-     * @return boolean
+     * @return bool
      */
     private function _isAttributeInAttributeSet(Mage_Eav_Model_Entity_Attribute $attribute, $attributeSetId)
     {
@@ -151,7 +150,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
     /**
      * Check admin permissions for this controller.
      * This allows a user to change the attribute set if they are allowed to edit products.
-     * @return boolean
+     * @return bool
      */
     protected function _isAllowed()
     {

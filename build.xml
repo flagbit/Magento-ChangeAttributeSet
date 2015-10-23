@@ -49,4 +49,12 @@
         </copy>
     </target>
 
+    <target name="phplint" description="Perform syntax check of sourcecode files">
+        <exec executable="bash" failonerror="true">
+            <arg value="-c"/>
+            <arg value="find -L ${basedir} \( -name '*.php' -o -name '*.phtml' \) -print0 | xargs -0 -n 1 -P 12 php -l" />
+
+            <redirector output="/dev/null" logError="true"/>
+        </exec>
+    </target>
 </project>

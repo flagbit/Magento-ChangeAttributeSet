@@ -2,22 +2,31 @@
 <config>
     <modules>
         <Flagbit_ChangeAttributeSet>
-            <version>2.0.0</version>
+            <version>2.1.0</version>
         </Flagbit_ChangeAttributeSet>
     </modules>
-    
+
+    <default>
+        <catalog>
+            <flagbit_changeattributeset>
+                <delete_old_data>0</delete_old_data>
+            </flagbit_changeattributeset>
+        </catalog>
+    </default>
+
     <global>
-		<helpers>
-			<flagbit_changeattributeset>
-					<class>Flagbit_ChangeAttributeSet_Helper</class>
-			</flagbit_changeattributeset>
-		</helpers>
+        <helpers>
+            <flagbit_changeattributeset>
+                <class>Flagbit_ChangeAttributeSet_Helper</class>
+            </flagbit_changeattributeset>
+        </helpers>
         <models>
             <flagbit_changeattributeset>
                 <class>Flagbit_ChangeAttributeSet_Model</class>
             </flagbit_changeattributeset>
         </models>
     </global>
+
     <adminhtml>
         <events>
             <adminhtml_block_html_before>
@@ -29,9 +38,9 @@
                     </flagbit_changeattributeset>
                 </observers>
             </adminhtml_block_html_before>
-        </events>        
+        </events>
     </adminhtml>
-    
+
     <admin>
         <routers>
             <adminhtml>
