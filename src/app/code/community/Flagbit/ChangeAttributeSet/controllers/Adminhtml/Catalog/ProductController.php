@@ -34,6 +34,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         $productIds   = array_map('intval', $productIds);
         $storeId      = (int)$this->getRequest()->getParam('store', Mage_Core_Model_App::ADMIN_STORE_ID);
         $attributeSet = (int)$this->getRequest()->getParam('attribute_set');
+        $deleteFlag   = Mage::getStoreConfigFlag('catalog/flagbit_changeattributeset/delete_old_data');
 
         if (!is_array($productIds)) {
             $this->_getSession()->addError($this->__('Please select product(s)'));
@@ -41,14 +42,44 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             try {
                 $collection = Mage::getModel('catalog/product')->getCollection()
                     ->addAttributeToFilter('entity_id', array('in' => $productIds))
-                    ->addAttributeToSelect('url_key')
-                ;
+                    ->addAttributeToSelect('url_key');
 
                 foreach ($collection as $product) {
                     $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
                     $product->setAttributeSetId($attributeSet)->setStoreId($storeId);
                 }
                 $collection->save();
+
+                if ($deleteFlag) {
+                    $targetAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
+                        ->setAttributeSetFilter($attributeSet)
+                        ->getColumnValues('attribute_code');
+
+                    $allAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
+                        ->getColumnValues('attribute_code');
+
+                    $attributesToDelete = array();
+                    if ($diffAttributes = array_diff($allAttributes, $targetAttributes)) {
+                        $attributesToDelete = $diffAttributes;
+                    }
+
+                    $resource = Mage::getSingleton('core/resource');
+                    $read = $resource->getConnection('core_read');
+                    $write = $resource->getConnection('core_write');
+
+                    $query = $read->select()
+                        ->from($resource->getTableName('eav_attribute'), array('attribute_id'))
+                        ->where('attribute_code IN (?)', $attributesToDelete);
+                    $attributeIds = $read->fetchCol($query, 'attribute_id');
+
+                    foreach ($this->getDeleteFromTables() as $table) {
+                        $condition = array(
+                            $write->quoteInto('entity_id IN (?)', $productIds),
+                            $write->quoteInto('attribute_id IN (?)', $attributeIds),
+                        );
+                        $write->delete($resource->getTableName($table), $condition);
+                    }
+                }
 
                 Mage::dispatchEvent('catalog_product_massupdate_after', array('products' => $productIds));
                 $this->_getSession()->addSuccess(
@@ -59,6 +90,17 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             }
         }
         $this->_redirect('adminhtml/catalog_product/index/', array());
+    }
+
+    private function getDeleteFromTables()
+    {
+        return array(
+            'catalog_product_entity_datetime',
+            'catalog_product_entity_decimal',
+            'catalog_product_entity_int',
+            'catalog_product_entity_text',
+            'catalog_product_entity_varchar',
+        );
     }
 
     /**
@@ -112,6 +154,6 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
      */
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed('catalog/products');
+        return Mage::getSingleton('admin/session')->isAllowed('catalog/products/flagbit_changeattributeset');
     }
 }
