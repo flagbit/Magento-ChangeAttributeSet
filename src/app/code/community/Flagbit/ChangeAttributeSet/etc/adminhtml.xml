@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <acl>
+        <resources>
+            <all>
+                <title>Allow Everything</title>
+            </all>
+            <admin>
+                <children>
+                    <catalog>
+                        <children>
+                            <products>
+                                <children>
+                                    <flagbit_changeattributeset translate="title" module="flagbit_changeattributeset">
+                                        <title><![CDATA[Change Attributeset<i style="color: blue;"> - Flagbit ChangeAttributeSet</i>]]></title>
+                                        <sort_order>100</sort_order>
+                                    </flagbit_changeattributeset>
+                                </children>
+                            </products>
+                        </children>
+                    </catalog>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

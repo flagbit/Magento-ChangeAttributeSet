@@ -7,13 +7,18 @@
     </modules>
     
     <global>
+		<helpers>
+			<flagbit_changeattributeset>
+					<class>Flagbit_ChangeAttributeSet_Helper</class>
+			</flagbit_changeattributeset>
+		</helpers>
         <models>
             <flagbit_changeattributeset>
                 <class>Flagbit_ChangeAttributeSet_Model</class>
             </flagbit_changeattributeset>
         </models>
     </global>
-    <adminhtml>        
+    <adminhtml>
         <events>
             <adminhtml_block_html_before>
                 <observers>
