@@ -18,5 +18,7 @@
     "require": {
         "magento-hackathon/magento-composer-installer": "*"
     },
-    "minimum-stability": "dev"
+    "extra": {
+        "magento-root-dir": "src"
+    }
 }

@@ -33,6 +33,10 @@ class Flagbit_ChangeAttributeSet_Model_Observer
      */
     public function addMassactionToProductGrid($observer)
     {
+        if (!$this->_isAllowedAction()) {
+            return $this;
+        }
+
         $block = $observer->getBlock();
         if ($block instanceof Mage_Adminhtml_Block_Catalog_Product_Grid) {
             $sets = Mage::getResourceModel('eav/entity_attribute_set_collection')
@@ -43,7 +47,7 @@ class Flagbit_ChangeAttributeSet_Model_Observer
             $block->getMassactionBlock()->addItem(
                 'flagbit_changeattributeset',
                 array(
-                    'label'      => Mage::helper('catalog')->__('Change attribute set'),
+                    'label'      => Mage::helper('catalog')->__('Change Attribute Set'),
                     'url'        => $block->getUrl('*/*/changeattributeset', array('_current' => true)),
                     'additional' => array(
                         'visibility' => array(
@@ -58,5 +62,14 @@ class Flagbit_ChangeAttributeSet_Model_Observer
             );
         }
         return $this;
+    }
+
+    /**
+     * Check admin permissions for this action.
+     * This allows a user to change the attribute set if they are allowed to edit products.
+     */
+    protected function _isAllowedAction()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('catalog/products/flagbit_changeattributeset');
     }
 }

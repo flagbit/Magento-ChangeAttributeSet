@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <catalog>
+                        <children>
+                            <products>
+                                <children>
+                                    <flagbit_changeattributeset translate="title" module="flagbit_changeattributeset">
+                                        <title>Change Attribute Set</title>
+                                        <sort_order>100</sort_order>
+                                    </flagbit_changeattributeset>
+                                </children>
+                            </products>
+                        </children>
+                    </catalog>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
