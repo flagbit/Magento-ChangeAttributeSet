@@ -46,8 +46,7 @@
             <adminhtml>
                 <args>
                     <modules>
-                        <Flagbit_ChangeAttributeSet before="Mage_Adminhtml">Flagbit_ChangeAttributeSet_Adminhtml
-                        </Flagbit_ChangeAttributeSet>
+                        <Flagbit_ChangeAttributeSet before="Mage_Adminhtml">Flagbit_ChangeAttributeSet_Adminhtml</Flagbit_ChangeAttributeSet>
                     </modules>
                 </args>
             </adminhtml>
