@@ -58,26 +58,24 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                     $allAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
                         ->getColumnValues('attribute_code');
 
-                    $attributesToDelete = array();
-                    if ($diffAttributes = array_diff($allAttributes, $targetAttributes)) {
-                        $attributesToDelete = $diffAttributes;
-                    }
+                    $attributesToDelete = array_diff($allAttributes, $targetAttributes);
+                    if (sizeof($attributesToDelete)) {
+                        $resource = Mage::getSingleton('core/resource');
+                        $read = $resource->getConnection('core_read');
+                        $write = $resource->getConnection('core_write');
 
-                    $resource = Mage::getSingleton('core/resource');
-                    $read = $resource->getConnection('core_read');
-                    $write = $resource->getConnection('core_write');
+                        $query = $read->select()
+                            ->from($resource->getTableName('eav_attribute'), array('attribute_id'))
+                            ->where('attribute_code IN (?)', $attributesToDelete);
+                        $attributeIds = $read->fetchCol($query, 'attribute_id');
 
-                    $query = $read->select()
-                        ->from($resource->getTableName('eav_attribute'), array('attribute_id'))
-                        ->where('attribute_code IN (?)', $attributesToDelete);
-                    $attributeIds = $read->fetchCol($query, 'attribute_id');
-
-                    foreach ($this->getDeleteFromTables() as $table) {
-                        $condition = array(
-                            $write->quoteInto('entity_id IN (?)', $productIds),
-                            $write->quoteInto('attribute_id IN (?)', $attributeIds),
-                        );
-                        $write->delete($resource->getTableName($table), $condition);
+                        foreach ($this->getDeleteFromTables() as $table) {
+                            $condition = array(
+                                $write->quoteInto('entity_id IN (?)', $productIds),
+                                $write->quoteInto('attribute_id IN (?)', $attributeIds),
+                            );
+                            $write->delete($resource->getTableName($table), $condition);
+                        }
                     }
                 }
 
