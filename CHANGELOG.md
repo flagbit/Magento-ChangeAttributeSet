@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [2.1.2] - 2015-12-29
+
+### Fixed
+
+- Fixed deletion of orphan attributes ([sreichel](https://github.com/sreichel))
+
 ## [2.1.1] - 2015-12-01
 
 ### Fixed
@@ -10,6 +16,6 @@
 
 ### Added
 
-- Added possibility to delete old data
+- Added possibility to delete old data ([sreichel](https://github.com/sreichel))
 - Added ACL permission for Change Attribute Set
 
