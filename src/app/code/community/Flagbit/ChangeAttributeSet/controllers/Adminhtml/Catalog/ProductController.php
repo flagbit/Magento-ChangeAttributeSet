@@ -25,6 +25,8 @@
  */
 class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mage_Adminhtml_Controller_Action
 {
+    private $_index = array();
+    
     /**
      * Product list page - change one or more products attribute set IDs
      */
@@ -35,11 +37,18 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         $storeId      = (int)$this->getRequest()->getParam('store', Mage_Core_Model_App::ADMIN_STORE_ID);
         $attributeSet = (int)$this->getRequest()->getParam('attribute_set');
         $deleteFlag   = Mage::getStoreConfigFlag('catalog/flagbit_changeattributeset/delete_old_data');
+        $flushLimit   = Mage::getStoreConfig('catalog/flagbit_changeattributeset/flush_limit');
 
         if (!is_array($productIds)) {
             $this->_getSession()->addError($this->__('Please select product(s)'));
         } else {
             try {
+                $this->_storeRealtimeIndexer();
+
+                if ($flushLimit && sizeof($productIds) >= $flushLimit) {
+                    Mage::app()->getCacheInstance()->flush();
+                }
+
                 $attributesWithDefaultValue = $this->_getAttributesWithDefaultValue();
                 $collection = Mage::getModel('catalog/product')->getCollection()
                     ->addAttributeToFilter('entity_id', array('in' => $productIds))
@@ -48,7 +57,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
 
                 foreach ($collection as $product) {
                     $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
-                    $product->setAttributeSetId($attributeSet)->setStoreId($storeId);
+                    $product->setIsMassupdate(true)->setAttributeSetId($attributeSet)->setStoreId($storeId);
                 }
                 $collection->save();
 
@@ -71,7 +80,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                             ->where('attribute_code IN (?)', $attributesToDelete);
                         $attributeIds = $read->fetchCol($query, 'attribute_id');
 
-                        foreach ($this->getDeleteFromTables() as $table) {
+                        foreach ($this->_getDeleteFromTables() as $table) {
                             $condition = array(
                                 $write->quoteInto('entity_id IN (?)', $productIds),
                                 $write->quoteInto('attribute_id IN (?)', $attributeIds),
@@ -80,6 +89,8 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                         }
                     }
                 }
+
+                $this->_restoreRealtimeIndexer();
 
                 Mage::dispatchEvent('catalog_product_massupdate_after', array('products' => $productIds));
                 $this->_getSession()->addSuccess(
@@ -92,7 +103,11 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         $this->_redirect('adminhtml/catalog_product/index/', array());
     }
 
-    private function getDeleteFromTables()
+    /**
+     * Get entity tables where attribute values should be deleted from
+     * @return array
+     */
+    private function _getDeleteFromTables()
     {
         return array(
             'catalog_product_entity_datetime',
@@ -165,6 +180,41 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             ->load();
 
         return (count($attributesMatchingInNewAttributeSet) === 0);
+    }
+
+    /**
+     * Set indexer modes to manual
+     */
+    private function _storeRealtimeIndexer()
+    {
+        $collection = Mage::getSingleton('index/indexer')->getProcessesCollection();
+        foreach ($collection as $process) {
+            if($process->getMode() != Mage_Index_Model_Process::MODE_MANUAL){
+                $this->_index[] = $process->getIndexerCode();
+                $process->setData('mode', Mage_Index_Model_Process::MODE_MANUAL)->save();
+            }
+        }
+        
+    }
+
+    /**
+     * Restore indexer modes to realtime an reindex product data
+     */
+    private function _restoreRealtimeIndexer()
+    {
+        $reindexCodes = array(
+            'catalog_product_attribute',
+            'catalog_product_flat'
+        );
+
+        $indexer = Mage::getSingleton('index/indexer');
+        foreach ($this->_index as $code) {
+            $process = $indexer->getProcessByCode($code);
+            if (in_array($code, $reindexCodes)) {
+                $process->reindexAll();
+            }
+            $process->setData('mode', Mage_Index_Model_Process::MODE_REAL_TIME)->save();
+        }
     }
 
     /**

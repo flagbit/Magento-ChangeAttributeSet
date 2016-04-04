@@ -15,6 +15,14 @@
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                         </delete_old_data>
+                        <flush_limit translate="label">
+                            <label>Product Limit to Flush Cache</label>
+                            <comment>Set to 0 to disable "Flush Cache Storage"</comment>
+                            <frontend_type>text</frontend_type>
+                            <frontend_class>validate-number</frontend_class>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </flush_limit>
                     </fields>
                 </flagbit_changeattributeset>
             </groups>
