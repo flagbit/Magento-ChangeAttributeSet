@@ -40,8 +40,10 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             $this->_getSession()->addError($this->__('Please select product(s)'));
         } else {
             try {
+                $attributesWithDefaultValue = $this->_getAttributesWithDefaultValue();
                 $collection = Mage::getModel('catalog/product')->getCollection()
                     ->addAttributeToFilter('entity_id', array('in' => $productIds))
+                    ->addAttributeToSelect($attributesWithDefaultValue)
                     ->addAttributeToSelect('url_key');
 
                 foreach ($collection as $product) {
@@ -99,6 +101,26 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             'catalog_product_entity_text',
             'catalog_product_entity_varchar',
         );
+    }
+
+    /**
+     * Get product attributes with default values
+     * @return array
+     */
+    private function _getAttributesWithDefaultValue()
+    {
+        $entityTypeId = Mage::getModel('eav/config')
+            ->getEntityType(Mage_Catalog_Model_Product::ENTITY)
+            ->getEntityTypeId();
+
+        $attributes = Mage::getResourceModel('eav/entity_attribute_collection')
+            ->addFieldToSelect('attribute_code')
+            ->addFieldToFilter('entity_type_id', $entityTypeId)
+            ->addFieldToFilter('default_value', array('neq' => ''))
+            ->addFieldToFilter('default_value', array('notnull' => true))
+            ->getColumnValues('attribute_code');
+
+        return $attributes;
     }
 
     /**
