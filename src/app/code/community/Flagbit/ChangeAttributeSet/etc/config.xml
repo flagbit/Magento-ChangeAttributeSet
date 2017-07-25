@@ -10,6 +10,7 @@
         <catalog>
             <flagbit_changeattributeset>
                 <delete_old_data>0</delete_old_data>
+                <flush_limit>10</flush_limit>
             </flagbit_changeattributeset>
         </catalog>
     </default>
