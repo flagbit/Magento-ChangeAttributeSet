@@ -71,11 +71,12 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                             ->where('attribute_code IN (?)', $attributesToDelete);
                         $attributeIds = $read->fetchCol($query, 'attribute_id');
 
+                        $condition = array(
+                            $write->quoteInto('entity_id IN (?)', $productIds),
+                            $write->quoteInto('attribute_id IN (?)', $attributeIds),
+                        );
+
                         foreach ($this->getDeleteFromTables() as $table) {
-                            $condition = array(
-                                $write->quoteInto('entity_id IN (?)', $productIds),
-                                $write->quoteInto('attribute_id IN (?)', $attributeIds),
-                            );
                             $write->delete($resource->getTableName($table), $condition);
                         }
                     }
