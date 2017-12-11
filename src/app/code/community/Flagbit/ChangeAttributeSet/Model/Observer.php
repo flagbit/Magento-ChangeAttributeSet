@@ -61,6 +61,7 @@ class Flagbit_ChangeAttributeSet_Model_Observer
                 )
             );
         }
+
         return $this;
     }
 

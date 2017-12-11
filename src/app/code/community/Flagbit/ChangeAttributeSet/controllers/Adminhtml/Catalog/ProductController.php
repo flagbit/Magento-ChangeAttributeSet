@@ -45,7 +45,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             try {
                 $this->_storeRealtimeIndexer();
 
-                if ($flushLimit && sizeof($productIds) >= $flushLimit) {
+                if ($flushLimit && count($productIds) >= $flushLimit) {
                     Mage::app()->getCacheInstance()->flush();
                 }
 
@@ -59,6 +59,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                     $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
                     $product->setIsMassupdate(true)->setAttributeSetId($attributeSet)->setStoreId($storeId);
                 }
+
                 $collection->save();
 
                 if ($deleteFlag) {
@@ -70,7 +71,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                         ->getColumnValues('attribute_code');
 
                     $attributesToDelete = array_diff($allAttributes, $targetAttributes);
-                    if (sizeof($attributesToDelete)) {
+                    if (count($attributesToDelete)) {
                         $resource = Mage::getSingleton('core/resource');
                         $read = $resource->getConnection('core_read');
                         $write = $resource->getConnection('core_write');
@@ -101,6 +102,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                 $this->_getSession()->addException($e, $e->getMessage());
             }
         }
+
         $this->_redirect('adminhtml/catalog_product/index/', array());
     }
 
@@ -214,6 +216,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             if (in_array($code, $reindexCodes)) {
                 $process->reindexAll();
             }
+
             $process->setData('mode', Mage_Index_Model_Process::MODE_REAL_TIME)->save();
         }
     }
