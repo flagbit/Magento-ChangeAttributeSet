@@ -67,17 +67,13 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                         ->setAttributeSetFilter($attributeSet)
                         ->getColumnValues('attribute_id');
 
-                    $allAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
-                        ->getColumnValues('attribute_id');
-
-                    $attributesToDelete = array_diff($allAttributes, $targetAttributes);
                     if (count($attributesToDelete)) {
                         $resource = Mage::getSingleton('core/resource');
                         $write = $resource->getConnection('core_write');
 
                         $condition = array(
                             $write->quoteInto('entity_id IN (?)', $productIds),
-                            $write->quoteInto('attribute_id IN (?)', $attributesToDelete),
+                            $write->quoteInto('attribute_id NOT IN (?)', $targetAttributes),
                         );
 
                         foreach ($this->_getDeleteFromTables() as $table) {
