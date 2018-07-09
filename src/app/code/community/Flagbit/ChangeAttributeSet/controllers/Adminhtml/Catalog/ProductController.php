@@ -65,25 +65,15 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                 if ($deleteFlag) {
                     $targetAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
                         ->setAttributeSetFilter($attributeSet)
-                        ->getColumnValues('attribute_code');
+                        ->getColumnValues('attribute_id');
 
-                    $allAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
-                        ->getColumnValues('attribute_code');
-
-                    $attributesToDelete = array_diff($allAttributes, $targetAttributes);
                     if (count($attributesToDelete)) {
                         $resource = Mage::getSingleton('core/resource');
-                        $read = $resource->getConnection('core_read');
                         $write = $resource->getConnection('core_write');
-
-                        $query = $read->select()
-                            ->from($resource->getTableName('eav_attribute'), array('attribute_id'))
-                            ->where('attribute_code IN (?)', $attributesToDelete);
-                        $attributeIds = $read->fetchCol($query, 'attribute_id');
 
                         $condition = array(
                             $write->quoteInto('entity_id IN (?)', $productIds),
-                            $write->quoteInto('attribute_id IN (?)', $attributeIds),
+                            $write->quoteInto('attribute_id NOT IN (?)', $targetAttributes),
                         );
 
                         foreach ($this->_getDeleteFromTables() as $table) {
