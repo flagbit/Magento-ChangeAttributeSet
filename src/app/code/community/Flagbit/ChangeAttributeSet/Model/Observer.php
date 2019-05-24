@@ -20,6 +20,8 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2.0
  */
 
+use Flagbit_ChangeAttributeSet_Helper_Data as Helper;
+
 /**
  * ChangeAttributeSet Observer Model
  */
@@ -37,7 +39,7 @@ class Flagbit_ChangeAttributeSet_Model_Observer
             return $this;
         }
 
-        $block = $observer->getBlock();
+        $block = $observer->getData('block');
         if ($block instanceof Mage_Adminhtml_Block_Catalog_Product_Grid) {
             $sets = Mage::getResourceModel('eav/entity_attribute_set_collection')
                 ->setEntityTypeFilter(Mage::getModel('catalog/product')->getResource()->getTypeId())
@@ -46,19 +48,19 @@ class Flagbit_ChangeAttributeSet_Model_Observer
 
             $block->getMassactionBlock()->addItem(
                 'flagbit_changeattributeset',
-                array(
+                [
                     'label'      => Mage::helper('catalog')->__('Change Attribute Set'),
-                    'url'        => $block->getUrl('*/*/changeattributeset', array('_current' => true)),
-                    'additional' => array(
-                        'visibility' => array(
+                    'url'        => $block->getUrl('*/*/changeattributeset', ['_current' => true]),
+                    'additional' => [
+                        'visibility' => [
                             'name'   => 'attribute_set',
                             'type'   => 'select',
                             'class'  => 'required-entry',
                             'label'  => Mage::helper('catalog')->__('Attribute Set'),
                             'values' => $sets,
-                        ),
-                    ),
-                )
+                        ],
+                    ],
+                ]
             );
         }
 
@@ -71,6 +73,6 @@ class Flagbit_ChangeAttributeSet_Model_Observer
      */
     protected function _isAllowedAction()
     {
-        return Mage::getSingleton('admin/session')->isAllowed('catalog/products/flagbit_changeattributeset');
+        return Mage::getSingleton('admin/session')->isAllowed(Helper::ACL_PATH);
     }
 }
