@@ -20,12 +20,17 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2.0
  */
 
+use Flagbit_ChangeAttributeSet_Helper_Data as Helper;
+
 /**
  * ChangeAttributeSet Controller
  */
 class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mage_Adminhtml_Controller_Action
 {
-    private $_index = array();
+    /**
+     * @var array
+     */
+    private $index = [];
 
     /**
      * Product list page - change one or more products attribute set IDs
@@ -50,11 +55,13 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                 }
 
                 $attributesWithDefaultValue = $this->_getAttributesWithDefaultValue();
+                /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
                 $collection = Mage::getModel('catalog/product')->getCollection()
-                    ->addAttributeToFilter('entity_id', array('in' => $productIds))
+                    ->addAttributeToFilter('entity_id', ['in' => $productIds])
                     ->addAttributeToSelect($attributesWithDefaultValue)
                     ->addAttributeToSelect('url_key');
 
+                /** @var Mage_Catalog_Model_Product $product */
                 foreach ($collection as $product) {
                     $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
                     $product->setIsMassupdate(true)->setAttributeSetId($attributeSet)->setStoreId($storeId);
@@ -67,36 +74,24 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                 if ($deleteFlag) {
                     $targetAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
                         ->setAttributeSetFilter($attributeSet)
-                        ->getColumnValues('attribute_code');
+                        ->getColumnValues('attribute_id');
 
-                    $allAttributes = Mage::getResourceModel('catalog/product_attribute_collection')
-                        ->getColumnValues('attribute_code');
+                    $resource = Mage::getSingleton('core/resource');
+                    $write = $resource->getConnection('core_write');
 
-                    $attributesToDelete = array_diff($allAttributes, $targetAttributes);
-                    if (count($attributesToDelete)) {
-                        $resource = Mage::getSingleton('core/resource');
-                        $read = $resource->getConnection('core_read');
-                        $write = $resource->getConnection('core_write');
+                    $condition = [
+                        $write->quoteInto('entity_id IN (?)', $productIds),
+                        $write->quoteInto('attribute_id NOT IN (?)', $targetAttributes),
+                    ];
 
-                        $query = $read->select()
-                            ->from($resource->getTableName('eav_attribute'), array('attribute_id'))
-                            ->where('attribute_code IN (?)', $attributesToDelete);
-                        $attributeIds = $read->fetchCol($query, 'attribute_id');
-
-                        $condition = array(
-                            $write->quoteInto('entity_id IN (?)', $productIds),
-                            $write->quoteInto('attribute_id IN (?)', $attributeIds),
-                        );
-
-                        foreach ($this->_getDeleteFromTables() as $table) {
-                            $write->delete($resource->getTableName($table), $condition);
-                        }
+                    foreach ($this->_getDeleteFromTables() as $table) {
+                        $write->delete($resource->getTableName($table), $condition);
                     }
                 }
 
                 $this->_restoreRealtimeIndexer();
 
-                Mage::dispatchEvent('catalog_product_massupdate_after', array('products' => $productIds));
+                Mage::dispatchEvent('catalog_product_massupdate_after', ['products' => $productIds]);
                 $this->_getSession()->addSuccess(
                     $this->__('Total of %d record(s) were successfully updated', count($productIds))
                 );
@@ -105,7 +100,7 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             }
         }
 
-        $this->_redirect('adminhtml/catalog_product/index/', array());
+        $this->_redirect('adminhtml/catalog_product/index/', []);
     }
 
     /**
@@ -114,13 +109,13 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
      */
     private function _getDeleteFromTables()
     {
-        return array(
+        return [
             'catalog_product_entity_datetime',
             'catalog_product_entity_decimal',
             'catalog_product_entity_int',
             'catalog_product_entity_text',
             'catalog_product_entity_varchar',
-        );
+        ];
     }
 
     /**
@@ -136,8 +131,8 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
         $attributes = Mage::getResourceModel('eav/entity_attribute_collection')
             ->addFieldToSelect('attribute_code')
             ->addFieldToFilter('entity_type_id', $entityTypeId)
-            ->addFieldToFilter('default_value', array('neq' => ''))
-            ->addFieldToFilter('default_value', array('notnull' => true))
+            ->addFieldToFilter('default_value', ['neq' => ''])
+            ->addFieldToFilter('default_value', ['notnull' => true])
             ->getColumnValues('attribute_code');
 
         return $attributes;
@@ -157,7 +152,9 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
             return;
         }
 
+        /** @var Mage_Eav_Model_Entity_Attribute $configurableAttribute */
         foreach ($type->getConfigurableAttributes($product) as $configurableAttribute) {
+            /** @var Mage_Eav_Model_Entity_Attribute $attribute */
             $attribute = Mage::getModel('eav/entity_attribute')->load($configurableAttribute->getAttributeId());
             if ($this->_isAttributeInAttributeSet($attribute, $attributeSetId)) {
                 throw new RuntimeException(
@@ -193,27 +190,29 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
     private function _storeRealtimeIndexer()
     {
         $collection = Mage::getSingleton('index/indexer')->getProcessesCollection();
+        /** @var Mage_Index_Model_Process $process */
         foreach ($collection as $process) {
-            if($process->getMode() != Mage_Index_Model_Process::MODE_MANUAL){
-                $this->_index[] = $process->getIndexerCode();
+            if ($process->getMode() != Mage_Index_Model_Process::MODE_MANUAL) {
+                $this->index[] = $process->getIndexerCode();
                 $process->setData('mode', Mage_Index_Model_Process::MODE_MANUAL)->save();
             }
         }
-
     }
 
     /**
      * Restore indexer modes to realtime an reindex product data
+     * @throws Exception
      */
     private function _restoreRealtimeIndexer()
     {
-        $reindexCodes = array(
+        $reindexCodes = [
             'catalog_product_attribute',
             'catalog_product_flat'
-        );
+        ];
 
+        /** @var Mage_Index_Model_Indexer $indexer */
         $indexer = Mage::getSingleton('index/indexer');
-        foreach ($this->_index as $code) {
+        foreach ($this->index as $code) {
             $process = $indexer->getProcessByCode($code);
             if (in_array($code, $reindexCodes)) {
                 $process->reindexAll();
@@ -230,6 +229,6 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
      */
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed('catalog/products/flagbit_changeattributeset');
+        return Mage::getSingleton('admin/session')->isAllowed(Helper::ACL_PATH);
     }
 }

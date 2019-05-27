@@ -25,4 +25,12 @@
  */
 class Flagbit_ChangeAttributeSet_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    const ACL_PATH = 'catalog/products/flagbit_changeattributeset';
+
+    /**
+     * Helper module name
+     *
+     * @var string
+     */
+    protected $_moduleName = 'Flagbit_ChangeAttributeSet';
 }
