@@ -58,6 +58,8 @@ class Flagbit_ChangeAttributeSet_Adminhtml_Catalog_ProductController extends Mag
                 foreach ($collection as $product) {
                     $this->_guardAgainstConfigurableAttributeNotInDestinationAttributeSet($product, $attributeSet);
                     $product->setIsMassupdate(true)->setAttributeSetId($attributeSet)->setStoreId($storeId);
+                    $product->getGroupPrice();
+                    $product->getTierPrice();
                 }
 
                 $collection->save();
