@@ -1,6 +1,6 @@
 # ChangeAttributeSet
 
-[![Build Status](https://travis-ci.org/Flagbit/Magento-ChangeAttributeSet.svg?branch=travis)](https://travis-ci.org/Flagbit/Magento-ChangeAttributeSet)
+[![Build Status](https://travis-ci.org/flagbit/Magento-ChangeAttributeSet.svg?branch=master)](https://travis-ci.org/flagbit/Magento-ChangeAttributeSet)
 
 ## What does ChangeAttributeSet do?
 
